@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendidikan Politik Interaktif: Warisan Bung Karno</title>
+    <!-- Chosen Palette: Earthy Neutrals with Nationalist Accents -->
+    <!-- Application Structure Plan: The application is structured into five thematic, scrollable sections for a clear narrative flow: 1. Header/Intro: Grabs attention and sets the context of Bulan Bung Karno. 2. Fondasi Pemikiran: An interactive core where users can select one of Bung Karno's three main ideologies (Pancasila, Trisakti, Marhaenisme) to explore its details. This non-linear exploration is key for user-driven learning. 3. Jejak Sejarah: A chronological timeline showcasing his historical contributions, making history digestible. 4. Relevansi Kontemporer: A dashboard-like section using charts and interactive elements to connect historical ideas to modern issues like polarization and corruption. This makes the abstract concrete. 5. Aksi & Rekomendasi: Concludes with actionable steps, empowering the user. This structure was chosen over a linear report format to enhance engagement, facilitate focused learning on complex topics, and clearly demonstrate the practical relevance of Bung Karno's ideas today. -->
+    <!-- Visualization & Content Choices: 1. Fondasi Pemikiran (Organize/Inform): Used interactive cards (HTML/CSS/JS) for Pancasila, Trisakti, Marhaenisme. Goal: Allow users to self-direct their learning. Interaction: Clicking a card reveals detailed text. Justification: More engaging than static text, prevents information overload. 2. Relevansi Kontemporer - Pilar Trisakti (Compare/Inform): A Doughnut Chart (Chart.js) shows the three pillars. Goal: Visualize the components of a core concept. Interaction: Hovering reveals pillar names. Justification: A simple, clear visual breakdown of a key framework. 3. Relevansi Kontemporer - Pancasila vs. Tantangan (Compare/Relate): A Radar Chart (Chart.js) maps Pancasila's values against modern challenges. Goal: Show the direct applicability of Pancasila. Interaction: Hovering over points shows data. Justification: A radar chart is excellent for comparing multiple variables against a central point, effectively illustrating Pancasila as a solution. 4. Jejak Sejarah (Change/Inform): A vertical timeline (HTML/CSS) presents historical events. Goal: Simplify chronological information. Interaction: None, focus on clarity of progression. Justification: Intuitive and visually appealing for storytelling. Library/Method: Chart.js for all charts due to its simplicity, responsiveness, and canvas-based rendering. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFDF8;
+            color: #333333;
+        }
+        .bg-cream { background-color: #F5F5DC; }
+        .bg-maroon { background-color: #800000; }
+        .text-maroon { color: #800000; }
+        .border-maroon { border-color: #800000; }
+        .active-tab {
+            border-bottom: 2px solid #800000;
+            color: #800000;
+            font-weight: 600;
+        }
+        .tab {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #800000;
+        }
+        .timeline-item {
+            position: relative;
+            width: 50%;
+        }
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            padding-right: 2rem;
+        }
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 2rem;
+        }
+        .timeline-dot {
+            content: '';
+            position: absolute;
+            top: 1.25rem;
+            width: 1rem;
+            height: 1rem;
+            background-color: #FFFFFF;
+            border: 2px solid #800000;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .timeline-item:nth-child(odd) .timeline-dot {
+            right: -0.5rem;
+            transform: translateX(50%);
+        }
+        .timeline-item:nth-child(even) .timeline-dot {
+            left: -0.5rem;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-maroon text-white p-6 text-center shadow-lg">
+        <h1 class="text-3xl md:text-4xl font-bold">Pendidikan Politik Berbasis Warisan Bung Karno</h1>
+        <p class="mt-2 text-lg">Memperkuat Nasionalisme & Karakter Bangsa di Era Kontemporer</p>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+        
+        <section id="pengantar" class="text-center mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-maroon mb-4">Urgensi Pendidikan Politik</h2>
+            <p class="max-w-3xl mx-auto text-base md:text-lg">
+                Di tengah dinamika global dan tantangan kebangsaan, pemikiran Bung Karno tetap menjadi kompas yang relevan. Aplikasi interaktif ini dirancang untuk menjelajahi kembali pilar-pilar pemikiran beliau—Pancasila, Trisakti, dan Marhaenisme—sebagai fondasi pendidikan politik. Tujuannya adalah untuk membentuk warga negara yang tidak hanya sadar politik, tetapi juga kritis, berkarakter, dan berjiwa nasionalis, siap menghadapi tantangan zaman.
+            </p>
+        </section>
+
+        <section id="fondasi" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-maroon mb-2">Fondasi Pemikiran Bung Karno</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Klik pada setiap pilar untuk memahami lebih dalam inti ajaran Bung Karno sebagai dasar pendidikan politik kebangsaan.</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card rounded-lg shadow-md p-6 text-center" onclick="showContent('pancasila')">
+                    <h3 class="text-xl font-bold text-maroon mb-2">Pancasila</h3>
+                    <p class="text-sm">Intisari Kebangsaan & Gotong Royong</p>
+                </div>
+                <div class="card rounded-lg shadow-md p-6 text-center" onclick="showContent('trisakti')">
+                    <h3 class="text-xl font-bold text-maroon mb-2">Trisakti</h3>
+                    <p class="text-sm">Kedaulatan, Kemandirian, Kepribadian</p>
+                </div>
+                <div class="card rounded-lg shadow-md p-6 text-center" onclick="showContent('marhaenisme')">
+                    <h3 class="text-xl font-bold text-maroon mb-2">Marhaenisme</h3>
+                    <p class="text-sm">Perjuangan Keadilan Sosial</p>
+                </div>
+            </div>
+            <div id="content-display" class="mt-8 p-6 bg-white rounded-lg shadow-inner border border-gray-200 min-h-[200px]">
+                <p class="text-gray-500 text-center">Pilih salah satu pilar di atas untuk melihat penjelasannya.</p>
+            </div>
+        </section>
+
+        <section id="jejak-sejarah" class="mb-16">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-maroon mb-8">Jejak Sejarah Pendidikan Politik Bung Karno</h2>
+            <div class="relative timeline max-w-3xl mx-auto">
+                <div class="timeline-item mb-8">
+                    <div class="timeline-dot"></div>
+                    <div class="p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h4 class="font-bold text-maroon">1921-1926</h4>
+                        <p class="text-sm">Menempuh pendidikan di Technische Hoogeschool te Bandoeng (sekarang ITB). Aktivisme politiknya mulai terbentuk, bergabung dalam organisasi pemuda.</p>
+                    </div>
+                </div>
+                <div class="timeline-item mb-8">
+                    <div class="timeline-dot"></div>
+                    <div class="p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h4 class="font-bold text-maroon">1927</h4>
+                        <p class="text-sm">Mendirikan Perserikatan Nasional Indonesia (PNI), sebuah partai yang bertujuan mencapai kemerdekaan penuh, sebagai wujud nyata pendidikan politiknya kepada massa.</p>
+                    </div>
+                </div>
+                <div class="timeline-item mb-8">
+                    <div class="timeline-dot"></div>
+                    <div class="p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h4 class="font-bold text-maroon">1938-1942</h4>
+                        <p class="text-sm">Selama pengasingan di Bengkulu, beliau menjadi guru dan menanamkan semangat nasionalisme kepada murid-muridnya secara strategis melalui pendidikan formal.</p>
+                    </div>
+                </div>
+                 <div class="timeline-item mb-8">
+                    <div class="timeline-dot"></div>
+                    <div class="p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                        <h4 class="font-bold text-maroon">1 Juni 1945</h4>
+                        <p class="text-sm">Menyampaikan pidato monumental "Lahirnya Pancasila", sebuah instrumen pendidikan politik massa yang menyatukan visi kebangsaan dan menjadi fondasi negara.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="relevansi" class="mb-16 bg-cream p-6 md:p-10 rounded-lg">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-maroon mb-2">Relevansi di Era Kontemporer</h2>
+             <p class="text-center text-gray-700 mb-8 max-w-3xl mx-auto">Warisan pemikiran Bung Karno bukan hanya catatan sejarah, tetapi juga kerangka kerja yang relevan untuk mengatasi tantangan masa kini. Bagian ini memvisualisasikan bagaimana ajaran beliau dapat diterapkan untuk memperkuat bangsa dalam menghadapi isu-isu modern seperti polarisasi, ketidakadilan ekonomi, dan tantangan global.</p>
+            <div class="flex justify-center mb-8 border-b border-gray-300">
+                <div id="tab-trisakti" class="tab active-tab" onclick="switchChart('trisakti')">Pilar Trisakti</div>
+                <div id="tab-pancasila" class="tab" onclick="switchChart('pancasila')">Pancasila vs Tantangan</div>
+            </div>
+
+            <div id="chart-trisakti-container" class="chart-container">
+                <canvas id="trisaktiChart"></canvas>
+            </div>
+            <div id="chart-pancasila-container" class="chart-container hidden">
+                <canvas id="pancasilaChart"></canvas>
+            </div>
+            <p id="chart-description" class="text-center mt-4 text-gray-600 max-w-2xl mx-auto"></p>
+        </section>
+
+
+        <section id="rekomendasi" class="text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-maroon mb-4">Rekomendasi Aksi</h2>
+            <p class="max-w-3xl mx-auto text-base md:text-lg mb-8">
+                Mengimplementasikan warisan Bung Karno membutuhkan aksi nyata. Berikut adalah beberapa rekomendasi untuk menerapkan pendidikan politik yang transformatif, membentuk generasi yang berintegritas dan berkomitmen pada kemajuan bangsa.
+            </p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                    <h4 class="font-bold text-maroon">1. Integrasi Kurikulum</h4>
+                    <p class="text-sm">Mengintegrasikan pemikiran Bung Karno secara holistik dalam kurikulum nasional, dari SD hingga Perguruan Tinggi, dengan studi kasus kontemporer.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                    <h4 class="font-bold text-maroon">2. Literasi Digital</h4>
+                    <p class="text-sm">Memanfaatkan teknologi digital untuk menyebarkan konten pendidikan politik yang menarik dan melatih generasi muda membedakan fakta dari hoaks.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                    <h4 class="font-bold text-maroon">3. Penguatan Karakter</h4>
+                    <p class="text-sm">Menanamkan nilai integritas, keadilan, dan anti-korupsi secara eksplisit dalam pendidikan, berbasis pada landasan moral Pancasila.</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                    <h4 class="font-bold text-maroon">4. Aksi Komunitas</h4>
+                    <p class="text-sm">Mendorong proyek-proyek gotong royong di tingkat lokal untuk mengatasi masalah nyata, memperkuat partisipasi aktif warga negara.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="text-center p-6 mt-12 bg-gray-100 text-gray-600 text-sm">
+        <p>Aplikasi Interaktif Peringatan Bulan Bung Karno</p>
+        <p>&copy; 2025. Dibuat untuk tujuan pendidikan.</p>
+    </footer>
+
+    <script>
+        const contentData = {
+            pancasila: `
+                <h3 class="text-xl font-bold text-maroon mb-3">Pancasila: Jiwa Bangsa & Kekuatan Gotong Royong</h3>
+                <p class="mb-2">Pancasila adalah philosofische grondslag (dasar filosofis) negara Indonesia. Bung Karno menggagas lima sila: Kebangsaan, Internasionalisme/Peri Kemanusiaan, Mufakat/Demokrasi, Kesejahteraan Sosial, dan Ketuhanan YME.</p>
+                <p class="mb-2">Lebih dari itu, beliau memerasnya menjadi satu inti, yaitu <strong>Gotong Royong</strong>. Ini adalah manifestasi praktis Pancasila, sebuah paham dinamis di mana 'semua untuk semua, keringat semua untuk kebahagiaan semua'.</p>
+                <p>Dalam konteks modern, Pancasila dengan semangat gotong royongnya menjadi fondasi persatuan di tengah keberagaman, pedoman etika anti-korupsi, dan solusi untuk menghadapi polarisasi sosial.</p>
+            `,
+            trisakti: `
+                <h3 class="text-xl font-bold text-maroon mb-3">Trisakti: Jalan Kemerdekaan Sejati</h3>
+                <p class="mb-2">Trisakti adalah konsep strategis Bung Karno untuk kemandirian bangsa yang utuh, yang terdiri dari tiga pilar:</p>
+                <ul class="list-disc list-inside mb-2 pl-4 text-left">
+                    <li><strong>Berdaulat dalam Politik:</strong> Kemandirian dalam menentukan sikap dan kebijakan tanpa intervensi asing.</li>
+                    <li><strong>Berdikari dalam Ekonomi:</strong> Membangun kekuatan ekonomi nasional yang tidak bergantung pada imperialisme, namun tetap terbuka untuk kerja sama yang setara.</li>
+                    <li><strong>Berkepribadian dalam Kebudayaan:</strong> Menjaga dan mengembangkan identitas budaya nasional sebagai benteng di tengah arus globalisasi.</li>
+                </ul>
+                <p>Trisakti sangat relevan untuk menghadapi tantangan neokolonialisme, memperkuat ekonomi lokal, dan melestarikan jati diri bangsa.</p>
+            `,
+            marhaenisme: `
+                <h3 class="text-xl font-bold text-maroon mb-3">Marhaenisme: Membela 'Wong Cilik'</h3>
+                <p class="mb-2">Marhaenisme adalah ideologi sosio-nasionalisme dan sosio-demokrasi yang lahir dari realitas sosial-ekonomi Indonesia. Nama ini terinspirasi dari pertemuan Bung Karno dengan petani miskin bernama Marhaen.</p>
+                <p class="mb-2">Ideologi ini bertujuan membela dan memperjuangkan nasib kaum <strong>Marhaen</strong>—petani, buruh, dan rakyat kecil lainnya—yang tertindas oleh sistem kapitalisme dan imperialisme.</p>
+                <p>Marhaenisme mendorong perjuangan untuk mengurangi kesenjangan sosial-ekonomi, memberdayakan rakyat kecil, dan melawan segala bentuk eksploitasi. Ini adalah seruan untuk keadilan sosial yang relevansinya terus terasa hingga hari ini.</p>
+            `
+        };
+
+        function showContent(topic) {
+            const display = document.getElementById('content-display');
+            display.innerHTML = contentData[topic];
+        }
+
+        const chartDescriptions = {
+            trisakti: "Diagram ini menunjukkan tiga pilar fundamental dari konsep Trisakti Bung Karno: Kedaulatan Politik, Kemandirian Ekonomi, dan Kepribadian Budaya. Ketiganya merupakan satu kesatuan yang tak terpisahkan untuk mencapai kemerdekaan bangsa yang sejati.",
+            pancasila: "Diagram ini memetakan nilai-nilai inti Pancasila terhadap tantangan kontemporer. Semakin luas area suatu nilai, semakin kuat potensinya sebagai solusi. Ini menunjukkan bagaimana Pancasila secara holistik dapat menjadi benteng ideologis melawan korupsi, intoleransi, ketidakadilan, dan polarisasi."
+        };
+
+        let trisaktiChartInstance, pancasilaChartInstance;
+        
+        const trisaktiCtx = document.getElementById('trisaktiChart').getContext('2d');
+        trisaktiChartInstance = new Chart(trisaktiCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Berdaulat dalam Politik', 'Berdikari dalam Ekonomi', 'Berkepribadian dalam Kebudayaan'],
+                datasets: [{
+                    label: 'Pilar Trisakti',
+                    data: [33.3, 33.3, 33.3],
+                    backgroundColor: [
+                        'rgba(128, 0, 0, 0.8)', // Maroon
+                        'rgba(178, 34, 34, 0.8)', // Firebrick
+                        'rgba(220, 20, 60, 0.8)'  // Crimson
+                    ],
+                    borderColor: '#FDFDF8',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#333333',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        document.getElementById('chart-description').innerText = chartDescriptions.trisakti;
+
+        function switchChart(chartName) {
+            const trisaktiContainer = document.getElementById('chart-trisakti-container');
+            const pancasilaContainer = document.getElementById('chart-pancasila-container');
+            const tabTrisakti = document.getElementById('tab-trisakti');
+            const tabPancasila = document.getElementById('tab-pancasila');
+            const descriptionEl = document.getElementById('chart-description');
+
+            if (chartName === 'trisakti') {
+                trisaktiContainer.classList.remove('hidden');
+                pancasilaContainer.classList.add('hidden');
+                tabTrisakti.classList.add('active-tab');
+                tabPancasila.classList.remove('active-tab');
+                descriptionEl.innerText = chartDescriptions.trisakti;
+            } else {
+                trisaktiContainer.classList.add('hidden');
+                pancasilaContainer.classList.remove('hidden');
+                tabTrisakti.classList.remove('active-tab');
+                tabPancasila.classList.add('active-tab');
+                descriptionEl.innerText = chartDescriptions.pancasila;
+                
+                if (!pancasilaChartInstance) {
+                    const pancasilaCtx = document.getElementById('pancasilaChart').getContext('2d');
+                    pancasilaChartInstance = new Chart(pancasilaCtx, {
+                        type: 'radar',
+                        data: {
+                            labels: ['Anti-Korupsi', 'Persatuan (Anti-Polarisasi)', 'Keadilan Sosial', 'Anti-Intervensi Asing', 'Toleransi'],
+                            datasets: [{
+                                label: 'Kekuatan Nilai Pancasila',
+                                data: [8, 9, 8, 7, 9],
+                                backgroundColor: 'rgba(128, 0, 0, 0.2)',
+                                borderColor: 'rgba(128, 0, 0, 1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: 'rgba(128, 0, 0, 1)',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: 'rgba(128, 0, 0, 1)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                             scales: {
+                                r: {
+                                    angleLines: {
+                                        color: 'rgba(0, 0, 0, 0.1)'
+                                    },
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.1)'
+                                    },
+                                    pointLabels: {
+                                        color: '#333333',
+                                        font: {
+                                            size: 11
+                                        }
+                                    },
+                                    ticks: {
+                                        backdropColor: 'transparent',
+                                        color: 'rgba(0, 0, 0, 0.5)',
+                                        stepSize: 2,
+                                        beginAtZero: true
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                     labels: {
+                                        color: '#333333'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
